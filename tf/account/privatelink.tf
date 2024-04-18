@@ -5,7 +5,12 @@ resource "aws_vpc_endpoint" "backend_rest" {
   security_group_ids  = [data.aws_security_group.dbx_dataplane_vpce.id]
   subnet_ids          = local.dbx_dataplane_vpce_subnet_ids
   private_dns_enabled = true
-  tags = local.tags
+  tags = merge(
+    {
+      Name = "${local.prefix}-dbx-vpce-backend-rest-interface-endpoint"
+    },
+    local.tags
+  )
 }
 
 resource "aws_vpc_endpoint" "relay" {
@@ -15,14 +20,19 @@ resource "aws_vpc_endpoint" "relay" {
   security_group_ids  = [data.aws_security_group.dbx_dataplane_vpce.id]
   subnet_ids          = local.dbx_dataplane_vpce_subnet_ids
   private_dns_enabled = true
-  tags = local.tags
+  tags = merge(
+    {
+      Name = "${local.prefix}-dbx-vpce-relay-interface-endpoint"
+    },
+    local.tags
+  )
 }
 
 resource "databricks_mws_vpc_endpoint" "backend_rest" {
   provider            = databricks.mws
   account_id          = var.databricks_account_id
   aws_vpc_endpoint_id = aws_vpc_endpoint.backend_rest.id
-  vpc_endpoint_name   = "${local.prefix}-dbx-vpc-backend"
+  vpc_endpoint_name   = "${local.prefix}-dbx-vpce-backend"
   region              = data.aws_region.current.name
   depends_on          = [aws_vpc_endpoint.backend_rest]
 }
@@ -31,7 +41,7 @@ resource "databricks_mws_vpc_endpoint" "relay" {
   provider            = databricks.mws
   account_id          = var.databricks_account_id
   aws_vpc_endpoint_id = aws_vpc_endpoint.relay.id
-  vpc_endpoint_name   = "${local.prefix}-dbx-vpc-relay"
+  vpc_endpoint_name   = "${local.prefix}-dbx-vpce-relay"
   region              = data.aws_region.current.name
   depends_on          = [aws_vpc_endpoint.relay]
 }
@@ -124,5 +134,15 @@ resource "aws_security_group_rule" "local" {
   to_port     = 443
   protocol    = "tcp"
   cidr_blocks  = ["${data.http.my_ip.body}/32"]
+  security_group_id = data.aws_security_group.dbx_dataplane_vpce.id
+}
+
+resource "aws_security_group_rule" "dbx_dataplane_vpce_ingress_kubernetes" {
+  type              = "ingress"
+  description = "Allow inbound traffic from the Kubernetes Cluster on port 443"
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  source_security_group_id = data.aws_security_group.kubernetes.id
   security_group_id = data.aws_security_group.dbx_dataplane_vpce.id
 }

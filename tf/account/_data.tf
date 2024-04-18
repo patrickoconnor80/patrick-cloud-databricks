@@ -72,6 +72,12 @@ data "aws_security_group" "snowplow_db_loader" {
   name = "${local.prefix}-snowplow-db-loader-server"
 }
 
+data "aws_security_group" "kubernetes" {
+  tags = {
+    "kubernetes.io/cluster/${local.prefix}-eks-cluster" = "owned"
+  }
+}
+
 data "http" "my_ip" {
   url = "https://ifconfig.me"
 }

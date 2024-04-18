@@ -19,9 +19,3 @@ provider "databricks" {
   host  = data.terraform_remote_state.mws.outputs.databricks_host
   token = data.aws_secretsmanager_secret_version.databricks_token.secret_string
 }
-
-# provider "databricks" {
-#   host  = "https://dbc-a353deb8-ec08.cloud.databricks.com"
-#   username = "patrickoconnor8014@gamil.com"
-#   password = "Redsoxrock8!"
-# }

@@ -21,7 +21,7 @@ resource "aws_secretsmanager_secret" "dbx_host" {
 
 resource "aws_secretsmanager_secret_version" "dbx_host" {
   secret_id     = aws_secretsmanager_secret.dbx_host.id
-  secret_string = databricks_mws_workspaces.this.workspace_url
+  secret_string = split("/",databricks_mws_workspaces.this.workspace_url)[2] # Remove https://
 }
 
 
@@ -29,19 +29,19 @@ resource "aws_secretsmanager_secret_version" "dbx_host" {
 
 data "aws_iam_policy_document" "secrets_policy" {
 
-  # statement {
-  #   sid    = "GetSecret"
-  #   effect = "Allow"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-external-secrets-sa-role"]
-  #   }
-  #   actions = ["secretsmanager:GetSecretValue"]
-  #   resources = [
-  #     "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_TOKEN_*",
-  #     "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_HOST*"
-  #   ]
-  # }
+  statement {
+    sid    = "GetSecret"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-dbt-external-secrets-sa-role"]
+    }
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_TOKEN_*",
+      "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_HOST*"
+    ]
+  }
 
   statement {
     sid    = "AdminAccessToSecret"
@@ -80,19 +80,19 @@ resource "aws_kms_alias" "secrets" {
 
 data "aws_iam_policy_document" "secrets_kms_policy" {
  
-  # statement {
-  #   sid    = "DecryptSecretsKMSKey"
-  #   effect = "Allow"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-external-secrets-sa-role"]
-  #   }
-  #   actions = [
-  #     "kms:Decrypt",
-  #     "kms:GenerateDataKey"
-  #   ]
-  #   resources = ["*"]
-  # }
+  statement {
+    sid    = "DecryptSecretsKMSKey"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-dbt-external-secrets-sa-role"]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = ["*"]
+  }
     
   statement {
     sid    = "AdminAccessToKMS"

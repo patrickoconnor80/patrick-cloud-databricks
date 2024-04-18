@@ -15,16 +15,16 @@ resource "aws_secretsmanager_secret_version" "dbx_sql_endpoint" {
 
 data "aws_iam_policy_document" "secrets_policy" {
 
-  # statement {
-  #   sid    = "GetSecret"
-  #   effect = "Allow"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-external-secrets-sa-role"]
-  #   }
-  #   actions = ["secretsmanager:GetSecretValue"]
-  #   resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_SQL_ENDPOINT*"]
-  # }
+  statement {
+    sid    = "GetSecret"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-dbt-external-secrets-sa-role"]
+    }
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_SQL_ENDPOINT*"]
+  }
 
   statement {
     sid    = "AdminAccessToSecret"
@@ -60,19 +60,19 @@ resource "aws_kms_alias" "secrets" {
 
 data "aws_iam_policy_document" "secrets_kms_policy" {
   
-  # statement {
-  #   sid    = "DecryptSecretsKMSKey"
-  #   effect = "Allow"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-external-secrets-sa-role"]
-  #   }
-  #   actions = [
-  #     "kms:Decrypt",
-  #     "kms:GenerateDataKey"
-  #   ]
-  #   resources = ["*"]
-  # }
+  statement {
+    sid    = "DecryptSecretsKMSKey"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-dbt-external-secrets-sa-role"]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = ["*"]
+  }
     
   statement {
     sid    = "AdminAccessToKMS"
