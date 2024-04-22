@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "root" {
 resource "aws_s3_bucket_ownership_controls" "root" {
   bucket = aws_s3_bucket.root.id
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
@@ -37,6 +37,31 @@ resource "aws_s3_bucket_public_access_block" "root" {
   ignore_public_acls      = true
   restrict_public_buckets = true
   depends_on              = [aws_s3_bucket.root]
+}
+
+resource "aws_s3_bucket_versioning" "root" {
+  bucket = aws_s3_bucket.root.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "root" {
+  bucket = aws_s3_bucket.root.id
+
+  rule {
+    id     = "log"
+    status = "Enabled"
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    expiration {
+      days = 10000
+    }
+
+  }
 }
 
 # AWS IAM Policy that only gives the Databricks AWS Account access to the S3 bucket

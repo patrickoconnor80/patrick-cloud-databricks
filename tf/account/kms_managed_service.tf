@@ -28,9 +28,10 @@ data "aws_iam_policy_document" "databricks_managed_services_cmk" {
 }
 
 resource "aws_kms_key" "managed_services_customer_managed_key" {
-  policy = data.aws_iam_policy_document.databricks_managed_services_cmk.json
-  description = "Encrypt the workspace’s managed services data in the control plane, including notebooks, secrets, Databricks SQL queries, and Databricks SQL query history with a CMK"
-  tags = local.tags
+  policy              = data.aws_iam_policy_document.databricks_managed_services_cmk.json
+  description         = "Encrypt the workspace’s managed services data in the control plane, including notebooks, secrets, Databricks SQL queries, and Databricks SQL query history with a CMK"
+  enable_key_rotation = true
+  tags                = local.tags
 }
 
 resource "aws_kms_alias" "managed_services_customer_managed_key_alias" {
@@ -39,7 +40,7 @@ resource "aws_kms_alias" "managed_services_customer_managed_key_alias" {
 }
 
 resource "databricks_mws_customer_managed_keys" "managed_services" {
-  provider = databricks.mws
+  provider   = databricks.mws
   account_id = var.databricks_account_id
   aws_key_info {
     key_arn   = aws_kms_key.managed_services_customer_managed_key.arn

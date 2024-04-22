@@ -7,7 +7,7 @@ resource "databricks_user" "unity_users" {
 
 resource "databricks_group" "admin_group" {
   provider     = databricks.mws
-  display_name =  "unity-admin-group-${var.env}"
+  display_name = "unity-admin-group-${var.env}"
 }
 
 resource "databricks_group_member" "admin_group_member" {

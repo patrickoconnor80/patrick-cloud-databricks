@@ -36,9 +36,9 @@ resource "databricks_mws_workspaces" "this" {
   workspace_name = local.prefix
   aws_region     = data.aws_region.current.name
 
-  credentials_id           = databricks_mws_credentials.this.credentials_id
-  storage_configuration_id = databricks_mws_storage_configurations.this.storage_configuration_id
-  network_id               = databricks_mws_networks.this.network_id
+  credentials_id             = databricks_mws_credentials.this.credentials_id
+  storage_configuration_id   = databricks_mws_storage_configurations.this.storage_configuration_id
+  network_id                 = databricks_mws_networks.this.network_id
   private_access_settings_id = databricks_mws_private_access_settings.this.private_access_settings_id
 
   token {}
@@ -53,60 +53,60 @@ resource "databricks_mws_workspaces" "this" {
 
 resource "aws_security_group_rule" "dbx_ingress_self" {
   type              = "ingress"
-  description = "Allow all internal TCP and UDP traffic from the Databricks cluster"
-  from_port   = 0
-  to_port     = 0 
-  protocol    = -1
-  self = true
+  description       = "Allow all internal TCP and UDP traffic from the Databricks cluster"
+  from_port         = 0
+  to_port           = 0
+  protocol          = -1
+  self              = true
   security_group_id = data.aws_security_group.dbx.id
 }
 
 resource "aws_security_group_rule" "dbx_egress_self" {
   type              = "egress"
-  description = "Allow all internal TCP and UDP traffic to the Databricks cluster"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  self = true
+  description       = "Allow all internal TCP and UDP traffic to the Databricks cluster"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  self              = true
   security_group_id = data.aws_security_group.dbx.id
 }
 
 resource "aws_security_group_rule" "dbx_egress_https" {
   type              = "egress"
-  description = "Allow outbound traffic on port 443"
-  from_port   = 443
-  to_port     = 443
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  description       = "Allow outbound traffic on port 443"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = data.aws_security_group.dbx.id
 }
 
 resource "aws_security_group_rule" "dbx_egress_http" {
   type              = "egress"
-  description = "Allow outbound traffic on port 80"
-  from_port   = 80
-  to_port     = 80
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  description       = "Allow outbound traffic on port 80"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = data.aws_security_group.dbx.id
 }
 
 resource "aws_security_group_rule" "dbx_egress_metastore" {
   type              = "egress"
-  description = "Allow outbound traffic on port 3306"
-  from_port   = 3306
-  to_port     = 3306
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  description       = "Allow outbound traffic on port 3306"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = data.aws_security_group.dbx.id
 }
 
 resource "aws_security_group_rule" "dbx_egress_privatelink" {
   type              = "egress"
-  description = "Allow outbound traffic on port 6666"
-  from_port   = 6666
-  to_port     = 6666
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  description       = "Allow outbound traffic on port 6666"
+  from_port         = 6666
+  to_port           = 6666
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = data.aws_security_group.dbx.id
 }

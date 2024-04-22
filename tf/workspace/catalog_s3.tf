@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "external" {
-  bucket = "${local.prefix}-dbx-external"
-  // destroy all objects with bucket destroy
+  bucket        = "${local.prefix}-dbx-external"
   force_destroy = true
   tags = merge(local.tags, {
     Name = "${local.prefix}-external"
@@ -10,7 +9,7 @@ resource "aws_s3_bucket" "external" {
 resource "aws_s3_bucket_ownership_controls" "external" {
   bucket = aws_s3_bucket.external.id
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
@@ -29,9 +28,37 @@ resource "aws_s3_bucket_versioning" "external_versioning" {
 }
 
 resource "aws_s3_bucket_public_access_block" "external" {
-  bucket             = aws_s3_bucket.external.id
-  ignore_public_acls = true
-  depends_on         = [aws_s3_bucket.external]
+  bucket                  = aws_s3_bucket.external.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+  depends_on              = [aws_s3_bucket.external]
+}
+
+resource "aws_s3_bucket_versioning" "external" {
+  bucket = aws_s3_bucket.external.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "external" {
+  bucket = aws_s3_bucket.external.id
+
+  rule {
+    id     = "log"
+    status = "Enabled"
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    expiration {
+      days = 10000
+    }
+
+  }
 }
 
 data "aws_iam_policy_document" "passrole_for_uc" {

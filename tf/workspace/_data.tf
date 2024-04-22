@@ -28,7 +28,7 @@ data "terraform_remote_state" "mws" {
   backend = "s3"
   config = {
     bucket = "patrick-cloud-tf-state"
-    key = "databricks.mws.${var.env}.tfstate"
+    key    = "databricks.mws.${var.env}.tfstate"
     region = data.aws_region.current.name
   }
 }

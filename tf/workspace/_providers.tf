@@ -1,18 +1,18 @@
 terraform {
-    backend "s3" {}
-    required_providers {
-        aws = {
-            source = "hashicorp/aws"
-            version = ">= 4"
-        }
-        databricks = {
-            source  = "databricks/databricks"
-        }
+  backend "s3" {}
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4"
     }
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
 }
 
 provider "aws" {
-    region = "us-east-1"
+  region = "us-east-1"
 }
 
 provider "databricks" {

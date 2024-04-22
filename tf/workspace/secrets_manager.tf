@@ -1,8 +1,8 @@
 resource "aws_secretsmanager_secret" "dbx_sql_endpoint" {
-  name = "DATABRICKS_SQL_ENDPOINT"
-  policy = data.aws_iam_policy_document.secrets_policy.json
+  name       = "DATABRICKS_SQL_ENDPOINT"
+  policy     = data.aws_iam_policy_document.secrets_policy.json
   kms_key_id = aws_kms_key.secrets.key_id
-  tags = local.tags
+  tags       = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "dbx_sql_endpoint" {
@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "secrets_policy" {
       type        = "AWS"
       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-eks-dbt-external-secrets-sa-role"]
     }
-    actions = ["secretsmanager:GetSecretValue"]
+    actions   = ["secretsmanager:GetSecretValue"]
     resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_SQL_ENDPOINT*"]
   }
 
@@ -59,7 +59,7 @@ resource "aws_kms_alias" "secrets" {
 }
 
 data "aws_iam_policy_document" "secrets_kms_policy" {
-  
+
   statement {
     sid    = "DecryptSecretsKMSKey"
     effect = "Allow"
@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "secrets_kms_policy" {
     ]
     resources = ["*"]
   }
-    
+
   statement {
     sid    = "AdminAccessToKMS"
     effect = "Allow"

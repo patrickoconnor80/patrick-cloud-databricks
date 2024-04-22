@@ -70,9 +70,10 @@ data "aws_iam_policy_document" "databricks_workspace_storage_cmk" {
 }
 
 resource "aws_kms_key" "workspace_storage_customer_managed_key" {
-  policy = data.aws_iam_policy_document.databricks_workspace_storage_cmk.json
-  description = "Encrypt the workspace's root S3 bucket and clusters' EBS volumes with a CMK."
-  tags = local.tags
+  policy              = data.aws_iam_policy_document.databricks_workspace_storage_cmk.json
+  description         = "Encrypt the workspace's root S3 bucket and clusters' EBS volumes with a CMK."
+  enable_key_rotation = true
+  tags                = local.tags
 }
 
 resource "aws_kms_alias" "workspace_storage_customer_managed_key_alias" {
@@ -81,7 +82,7 @@ resource "aws_kms_alias" "workspace_storage_customer_managed_key_alias" {
 }
 
 resource "databricks_mws_customer_managed_keys" "workspace_storage" {
-  provider = databricks.mws
+  provider   = databricks.mws
   account_id = var.databricks_account_id
   aws_key_info {
     key_arn   = aws_kms_key.workspace_storage_customer_managed_key.arn

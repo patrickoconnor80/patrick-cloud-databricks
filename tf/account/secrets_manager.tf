@@ -1,9 +1,9 @@
 
 resource "aws_secretsmanager_secret" "dbx_token" {
-  name = "DATABRICKS_TOKEN_"
-  policy = data.aws_iam_policy_document.secrets_policy.json
+  name       = "DATABRICKS_TOKEN_"
+  policy     = data.aws_iam_policy_document.secrets_policy.json
   kms_key_id = aws_kms_key.secrets.key_id
-  tags = local.tags
+  tags       = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "dbx_token" {
@@ -13,15 +13,15 @@ resource "aws_secretsmanager_secret_version" "dbx_token" {
 
 
 resource "aws_secretsmanager_secret" "dbx_host" {
-  name = "DATABRICKS_HOST"
-  policy = data.aws_iam_policy_document.secrets_policy.json
+  name       = "DATABRICKS_HOST"
+  policy     = data.aws_iam_policy_document.secrets_policy.json
   kms_key_id = aws_kms_key.secrets.key_id
-  tags = local.tags
+  tags       = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "dbx_host" {
   secret_id     = aws_secretsmanager_secret.dbx_host.id
-  secret_string = split("/",databricks_mws_workspaces.this.workspace_url)[2] # Remove https://
+  secret_string = split("/", databricks_mws_workspaces.this.workspace_url)[2] # Remove https://
 }
 
 
@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "secrets_policy" {
     resources = [
       "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_TOKEN_*",
       "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:DATABRICKS_HOST*"
-      ]
+    ]
   }
 }
 
@@ -79,7 +79,7 @@ resource "aws_kms_alias" "secrets" {
 }
 
 data "aws_iam_policy_document" "secrets_kms_policy" {
- 
+
   statement {
     sid    = "DecryptSecretsKMSKey"
     effect = "Allow"
@@ -93,7 +93,7 @@ data "aws_iam_policy_document" "secrets_kms_policy" {
     ]
     resources = ["*"]
   }
-    
+
   statement {
     sid    = "AdminAccessToKMS"
     effect = "Allow"

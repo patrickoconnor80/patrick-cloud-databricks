@@ -2,17 +2,17 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 data "aws_vpc" "this" {
-    filter {
-        name = "tag:Name"
-        values = ["${local.prefix}-vpc"]
-    }
+  filter {
+    name   = "tag:Name"
+    values = ["${local.prefix}-vpc"]
+  }
 }
 
 data "aws_subnets" "public" {
-    filter {
-        name = "tag:Name"
-        values = ["${local.prefix}-public-us-east-1*"]
-    }
+  filter {
+    name   = "tag:Name"
+    values = ["${local.prefix}-public-us-east-1*"]
+  }
 }
 
 data "aws_subnet" "public" {
@@ -21,10 +21,10 @@ data "aws_subnet" "public" {
 }
 
 data "aws_subnets" "private" {
-    filter {
-        name = "tag:Name"
-        values = ["${local.prefix}-private-us-east-1*"]
-    }
+  filter {
+    name   = "tag:Name"
+    values = ["${local.prefix}-private-us-east-1*"]
+  }
 }
 
 data "aws_subnet" "private" {
@@ -33,10 +33,10 @@ data "aws_subnet" "private" {
 }
 
 data "aws_subnets" "dbx_dataplane_vpce" {
-    filter {
-        name = "tag:Name"
-        values = ["${local.prefix}-dbx-dataplane-vpce-us-east-1*"]
-    }
+  filter {
+    name   = "tag:Name"
+    values = ["${local.prefix}-dbx-dataplane-vpce-us-east-1*"]
+  }
 }
 
 data "aws_subnet" "dbx_dataplane_vpce" {

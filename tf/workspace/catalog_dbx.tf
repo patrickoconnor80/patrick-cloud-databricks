@@ -12,7 +12,7 @@ resource "databricks_grants" "metastore" {
 }
 
 resource "databricks_storage_credential" "external" {
-  name     = "${local.prefix}-dbx-external-access"
+  name = "${local.prefix}-dbx-external-access"
   aws_iam_role {
     role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.prefix}-dbx-uc-access" //cannot reference aws_iam_role directly, as it will create circular dependency
   }
@@ -52,7 +52,7 @@ resource "databricks_catalog" "snowplow" {
 }
 
 resource "databricks_grants" "snowplow_catalog" {
-  catalog  = databricks_catalog.snowplow.name
+  catalog = databricks_catalog.snowplow.name
   grant {
     principal  = databricks_user.admin.user_name
     privileges = ["ALL_PRIVILEGES"]
@@ -69,7 +69,7 @@ resource "databricks_schema" "snowplow_atomic" {
 }
 
 resource "databricks_grants" "things" {
-  schema   = databricks_schema.snowplow_atomic.id
+  schema = databricks_schema.snowplow_atomic.id
   grant {
     principal  = databricks_user.admin.user_name
     privileges = ["ALL_PRIVILEGES"]
